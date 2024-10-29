@@ -20,7 +20,6 @@
     <a href="#test-data">Test Data</a>
     <a href="#algorithm">Algorithm & Flowchart</a>
     <a href="#code">Code Explanation</a>
-    <a href="#deployment">Deployment Instructions</a>
   </nav>
 
   <!-- Main Content -->
@@ -133,26 +132,6 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=port)
       </code></pre>
     </section>
-
-    <!-- Deployment Instructions Section -->
-    <section id="deployment">
-      <h2>Deployment Instructions</h2>
-      <p>This application is set up for deployment on platforms like Render, which assigns a specific port. Follow these steps to deploy:</p>
-      
-      <ol style="padding-left: 1.5rem;">
-        <li>Ensure a <code>requirements.txt</code> file exists with all dependencies (e.g., Flask).</li>
-        <li>Use a deployment service like Render, Heroku, or PythonAnywhere.</li>
-        <li>For Render:
-          <ul style="padding-left: 1.5rem;">
-            <li>Upload the code repository to GitHub.</li>
-            <li>Create a new web service on Render linked to your GitHub repository.</li>
-            <li>Ensure <code>app.py</code> reads the <code>PORT</code> environment variable (as shown above).</li>
-          </ul>
-        </li>
-        <li>After deployment, the app should be live at the provided Render URL.</li>
-      </ol>
-    </section>
-  </main>
 
   <!-- Footer -->
   <footer>
