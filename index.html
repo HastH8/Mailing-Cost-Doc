@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mailing Cost Calculator Documentation</title>
+  <link rel="stylesheet" href="UI/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <h1>Rahmania Mailing Cost Calculator - Documentation</h1>
+    <p>An interactive guide for the Flask-based web version of the mailing cost calculator.</p>
+  </header>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="#introduction">Introduction</a>
+    <a href="#test-data">Test Data</a>
+    <a href="#algorithm">Algorithm & Flowchart</a>
+    <a href="#code">Code Explanation</a>
+    <a href="#deployment">Deployment Instructions</a>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+    
+    <!-- Introduction Section -->
+    <section id="introduction">
+      <h2>Introduction</h2>
+      <p>This documentation explains the workings of the Rahmania Mailing Cost Calculator web application. The calculator determines mailing costs based on a letter's weight, with rates set according to Rahmania's postal rules. This version is deployed as a Flask web application, making it accessible online.</p>
+    </section>
+
+    <!-- Test Data Section -->
+    <section id="test-data">
+      <h2>Test Data</h2>
+      <p>Use the following test cases to verify the calculator’s functionality across different weight ranges:</p>
+      <table>
+        <tr><th>Test Case</th><th>Weight (g)</th><th>Expected Cost (sinas)</th></tr>
+        <tr><td>1</td><td>10</td><td>40</td></tr>
+        <tr><td>2</td><td>30</td><td>40</td></tr>
+        <tr><td>3</td><td>31</td><td>55</td></tr>
+        <tr><td>4</td><td>50</td><td>55</td></tr>
+        <tr><td>5</td><td>51</td><td>70</td></tr>
+        <tr><td>6</td><td>100</td><td>70</td></tr>
+        <tr><td>7</td><td>101</td><td>95</td></tr>
+        <tr><td>8</td><td>149</td><td>95</td></tr>
+        <tr><td>9</td><td>150</td><td>95</td></tr>
+        <tr><td>10</td><td>151</td><td>120</td></tr>
+      </table>
+    </section>
+
+    <!-- Algorithm & Flowchart Section -->
+    <section id="algorithm">
+      <h2>Algorithm & Flowchart</h2>
+      <p>The following algorithm explains how the mailing program calculates the cost based on weight:</p>
+      
+      <ol style="padding-left: 1.5rem;">
+        <li><strong>Input:</strong> Prompt the user for the mass of the letter (in grams).</li>
+        <li><strong>Calculate Cost Based on Weight:</strong>
+          <ul style="padding-left: 1.5rem;">
+            <li>If weight is 30 grams or less, set cost to 40 sinas.</li>
+            <li>If weight is between 30 grams and 50 grams, set cost to 55 sinas.</li>
+            <li>If weight is between 50 grams and 100 grams, set cost to 70 sinas.</li>
+            <li>If weight is over 100 grams:
+              <ul style="padding-left: 1.5rem;">
+                <li>Set the base cost to 70 sinas.</li>
+                <li>Add 25 sinas for each additional 50 grams (or part thereof) above 100 grams.</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><strong>Output:</strong> Display the calculated mailing cost.</li>
+      </ol>
+
+      <h3>Flowchart for Mailing Program</h3>
+      <img src="flowchart.png" alt="Flowchart for Mailing Program" class="flowchart">
+    </section>
+
+    <!-- Code Explanation Section -->
+    <section id="code">
+      <h2>Code Explanation</h2>
+      <p>This Flask web application calculates mailing costs and displays them in a user-friendly web interface. Below is a detailed breakdown of the Python code used:</p>
+      <pre><code>
+import os
+from flask import Flask, render_template, request
+
+# Initialize Flask application
+app = Flask(__name__)
+
+def calculate_mail_cost(mass):
+    """
+    Function to calculate mailing cost based on mass (in grams).
+    """
+    # Define cost brackets based on weight
+    if mass <= 30:
+        return 40
+    elif mass <= 50:
+        return 55
+    elif mass <= 100:
+        return 70
+    else:
+        # For weights over 100 grams, calculate additional cost
+        extra_weight = mass - 100
+        additional_cost = ((extra_weight + 49) // 50) * 25
+        return 70 + additional_cost
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    """
+    Handles main page requests, calculates cost when user inputs weight.
+    """
+    cost = None
+    if request.method == "POST":
+        try:
+            # Get weight input from user
+            mass = float(request.form.get("mass"))
+            # Validate non-negative weight
+            if mass < 0:
+                cost = "Invalid mass. Enter a non-negative value."
+            else:
+                # Calculate mailing cost
+                cost = calculate_mail_cost(mass)
+                cost = f"The cost to mail a letter weighing {mass} grams is {cost} sinas."
+        except ValueError:
+            cost = "Please enter a valid numeric value for the mass."
+    return render_template("index.html", cost=cost)
+
+if __name__ == "__main__":
+    # Bind to the specified port for deployment
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+      </code></pre>
+    </section>
+
+    <!-- Deployment Instructions Section -->
+    <section id="deployment">
+      <h2>Deployment Instructions</h2>
+      <p>This application is set up for deployment on platforms like Render, which assigns a specific port. Follow these steps to deploy:</p>
+      
+      <ol style="padding-left: 1.5rem;">
+        <li>Ensure a <code>requirements.txt</code> file exists with all dependencies (e.g., Flask).</li>
+        <li>Use a deployment service like Render, Heroku, or PythonAnywhere.</li>
+        <li>For Render:
+          <ul style="padding-left: 1.5rem;">
+            <li>Upload the code repository to GitHub.</li>
+            <li>Create a new web service on Render linked to your GitHub repository.</li>
+            <li>Ensure <code>app.py</code> reads the <code>PORT</code> environment variable (as shown above).</li>
+          </ul>
+        </li>
+        <li>After deployment, the app should be live at the provided Render URL.</li>
+      </ol>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>Rahmania Postal Service &copy; 2024</p>
+    <p>Made By: Hast K.</p>
+  </footer>
+</body>
+</html>
