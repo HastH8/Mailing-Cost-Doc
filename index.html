@@ -68,63 +68,67 @@
         </li>
         <li><strong>Output:</strong> Display the calculated mailing cost.</li>
       </ol>
+
+      <h3>Flowchart for Mailing Program</h3>
+      <img src="Assests/Flowchart.png" alt="Flowchart for Mailing Program" class="flowchart">
     </section>
 
     <section id="code">
       <h2>Code Explanation</h2>
-      <p>This program was made by python and flask flask was used to deploy the application and turn it into a web application and python for everything else below is the code explanation for the program:</p>
+      <p>This program was made with Python and Flask. Flask is used to deploy the application and provide a web interface, while Python handles the core functionalities. Below is the code explanation for the program:</p>
+      
       <pre><code>
-import os
-from flask import Flask, render_template, request
-
-# Initialize Flask application
-app = Flask(__name__)
-
-def calculate_mail_cost(mass):
-    """
-    Function to calculate mailing cost based on mass (in grams).
-    """
-    # Define cost brackets based on weight
-    if mass <= 30:
-        return 40
-    elif mass <= 50:
-        return 55
-    elif mass <= 100:
-        return 70
-    else:
-        # For weights over 100 grams, calculate additional cost
-        extra_weight = mass - 100
-        additional_cost = ((extra_weight + 49) // 50) * 25
-        return 70 + additional_cost
-
-@app.route("/", methods=["GET", "POST"])
-def index():
-    """
-    Handles main page requests, calculates cost when user inputs weight.
-    """
-    cost = None
-    if request.method == "POST":
-        try:
-            # Get weight input from user
-            mass = float(request.form.get("mass"))
-            # Validate non-negative weight
-            if mass < 0:
-                cost = "Invalid mass. Enter a non-negative value."
-            else:
-                # Calculate mailing cost
-                cost = calculate_mail_cost(mass)
-                cost = f"The cost to mail a letter weighing {mass} grams is {cost} sinas."
-        except ValueError:
-            cost = "Please enter a valid numeric value for the mass."
-    return render_template("index.html", cost=cost)
-
-if __name__ == "__main__":
-    # Bind to the specified port for deployment
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    1. <strong>Imports:</strong>
+       - Standard and external libraries are imported for various functionalities:
+         - `os`, `csv`, `requests` handle file and API operations.
+         - `Flask` and `flask` modules manage the web application, routing, sessions, and responses.
+    
+    2. <strong>Application Setup:</strong>
+       - The application is created with `app = Flask(__name__)`.
+       - `app.secret_key` secures the session data used to store the user's mailing history.
+    
+    3. <strong>Utility Functions:</strong>
+       - `convert_to_grams(mass, unit)`: Converts any weight unit (grams, kilograms, ounces, pounds) into grams. This is essential for a standardized cost calculation.
+       - `calculate_mail_cost(mass)`: Calculates mailing costs based on the provided mass in grams. Costs are assigned depending on weight thresholds:
+         - Up to 30 grams: base cost of 40.
+         - Up to 50 grams: base cost of 55.
+         - Up to 100 grams: base cost of 70.
+         - Above 100 grams: a base cost is applied for the first 100 grams, and additional weight is charged at 25 TRY for every 50 grams.
+       - `convert_currency(amount, target_currency)`: Converts the calculated cost from TRY to another specified currency using exchange rates fetched from an external API. If the API request fails, it returns a conversion error message.
+    
+    4. <strong>Main Route</strong> (`@app.route("/")`):
+       - <em>`index()` Function:</em> This handles the main logic of the application.
+         - When the page is accessed via `GET`, it renders the form.
+         - When the page is accessed via `POST` (form submission), it retrieves and validates user inputs (`mass`, `unit`, and `currency`).
+         - The weight is converted to grams and passed to `calculate_mail_cost` for a cost calculation.
+         - The calculated cost in TRY is converted into the user-specified currency using `convert_currency`.
+         - The cost breakdown and converted total are displayed to the user.
+         - Each calculation is stored in the session history for easy retrieval and export.
+    
+    5. <strong>Clear History Route</strong> (`@app.route("/clear_history")`):
+       - Clears the session history by resetting it to an empty list.
+       - Redirects back to the main page after clearing.
+    
+    6. <strong>Export to CSV Route</strong> (`@app.route("/export_csv")`):
+       - Generates a CSV file of the user's calculation history.
+       - The CSV file contains columns for weight, cost, and a detailed breakdown.
+       - CSV data is dynamically generated and returned as a downloadable file with headers for appropriate file type.
+    
+    7. <strong>Code Flow:</strong>
+       - The user accesses the main page and inputs their package details.
+       - The weight is converted, and costs are calculated based on weight thresholds.
+       - The result is shown, and users have options to clear history or export calculations.
+    
+    8. <strong>Security Considerations:</strong>
+       - `app.secret_key` secures session data.
+       - The application is configured to run on host `0.0.0.0` for general accessibility.
+    
+    9. <strong>Flask Run Configuration:</strong>
+       - `if __name__ == "__main__"`: Ensures the app runs directly with `python app.py`.
+       - Configures port `808` for local development or deployment environments.
       </code></pre>
-    </section>
-</main>
+    </section>    
+    </main>
 
   <footer>
     <p>Rahmania Postal Service &copy; 2024</p>
